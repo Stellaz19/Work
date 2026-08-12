@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang='th'>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,53 +36,134 @@
   }
 </style>
 </head>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#f3f6fa; --surface:#ffffff; --surface2:#f8fafc; --text:#172033;
+  --muted:#667085; --line:#e5eaf0; --accent:#334155; --accent2:#64748b;
+  --shadow:0 10px 28px rgba(15,23,42,.06); --radius:18px;
+}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif}
+.wrap{max-width:1440px;margin:auto;padding:32px 34px 44px}
+.hero{
+  background:#172033;color:#fff;border-radius:24px;padding:34px 38px;
+  box-shadow:var(--shadow);margin-bottom:22px;position:relative;overflow:hidden
+}
+.hero:after{content:"";position:absolute;width:280px;height:280px;border-radius:50%;
+right:-90px;top:-140px;background:rgba(255,255,255,.06)}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.7;font-weight:700}
+.hero h1{font-size:32px;line-height:1.2;margin:9px 0 10px;font-weight:800}
+.hero p{margin:0;max-width:850px;line-height:1.7;color:#d7deea;font-size:14px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin:0 0 22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 21px;box-shadow:var(--shadow)}
+.label{font-size:12px;color:var(--muted);font-weight:600}
+.value{font-size:29px;font-weight:800;margin-top:7px;letter-spacing:-.02em}
+.sub{font-size:12px;color:#98a2b3;margin-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.panel.full{grid-column:1/-1}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px}
+.panel h2{font-size:17px;line-height:1.35;margin:0;font-weight:750}
+.panel .desc{font-size:12px;color:var(--muted);margin:5px 0 0;line-height:1.55}
+.chart{height:390px}
+.chart.tall{height:440px}
+.topic-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+.topic{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:15px}
+.topic .topic-title{font-weight:750;font-size:13px;line-height:1.35}
+.topic .topic-num{font-size:25px;font-weight:800;margin-top:8px}
+.topic .topic-meta{font-size:11px;color:var(--muted);line-height:1.6;margin-top:2px}
+.insights{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:13px}
+.insight{border:1px solid var(--line);background:var(--surface2);border-radius:13px;padding:14px 15px;font-size:13px;line-height:1.65}
+.insight b{display:block;margin-bottom:4px}
+table{width:100%;border-collapse:separate;border-spacing:0;margin-top:12px;overflow:hidden;border:1px solid var(--line);border-radius:12px}
+th,td{padding:12px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--surface2);font-size:11px;color:var(--muted);font-weight:750}
+td{font-size:12px;line-height:1.5}
+tr:last-child td{border-bottom:0}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2f6;font-size:10px;font-weight:700;color:#475467}
+.footer{margin-top:20px;text-align:center;color:#98a2b3;font-size:11px}
+@media(max-width:1000px){
+ .cards{grid-template-columns:repeat(2,1fr)}
+ .topic-grid{grid-template-columns:repeat(2,1fr)}
+ .grid{grid-template-columns:1fr}
+ .panel.full{grid-column:auto}
+}
+@media(max-width:600px){
+ .wrap{padding:18px}
+ .cards,.topic-grid,.insights{grid-template-columns:1fr}
+ .hero{padding:25px}
+ .hero h1{font-size:25px}
+}
+</style>
+</head>
+
 <body>
 <div class="wrap">
   <section class="hero">
-    <h1>Scopus Research Landscape: 2 Files × 4 Topics</h1>
-    <p>วิเคราะห์จากข้อมูล Scopus จำนวน 600 รายการ (ไฟล์ละ 300 รายการ) และเลือก 4 theme จากคำสำคัญที่ปรากฏในชื่อบทความ</p>
-    <p>ใช้เพื่อดู “จุดเด่นของแต่ละไฟล์ + หัวข้อที่ต่อยอดทำ Data Visualization / Research Review ได้”</p>
+    <div class="eyebrow">SCOPUS RESEARCH DASHBOARD • 2025</div>
+    <h1>Research Landscape & Topic Analysis</h1>
+    <p>เปรียบเทียบงานวิจัยจาก Scopus จำนวน 600 รายการจาก 2 ไฟล์ โดยคัดเลือก 4 หัวข้อหลักเพื่อดูความแตกต่าง จุดเด่น และทิศทางของงานวิจัยอย่างเป็นระบบ</p>
   </section>
 
   <section class="cards">
-    <div class="card"><div class="label">เอกสารทั้งหมด</div><div class="value">600</div></div>
-    <div class="card"><div class="label">Citations รวม</div><div class="value">764</div></div>
-    <div class="card"><div class="label">ไฟล์ 1</div><div class="value">300</div></div>
-    <div class="card"><div class="label">ไฟล์ 2</div><div class="value">300</div></div>
+    <div class="card"><div class="label">เอกสารทั้งหมด</div><div class="value">600</div><div class="sub">2 Scopus exports</div></div>
+    <div class="card"><div class="label">Citations รวม</div><div class="value">548</div><div class="sub">จากบทความทั้งหมด</div></div>
+    <div class="card"><div class="label">ไฟล์ 1</div><div class="value">300</div><div class="sub">50% ของข้อมูลทั้งหมด</div></div>
+    <div class="card"><div class="label">ไฟล์ 2</div><div class="value">300</div><div class="sub">50% ของข้อมูลทั้งหมด</div></div>
   </section>
 
   <section class="grid">
-    <div class="panel"><h2>จำนวนเอกสารแยกตามไฟล์</h2><div id="fileChart" class="chart"></div></div>
-    <div class="panel"><h2>ประเภทเอกสาร</h2><div id="typeChart" class="chart"></div></div>
-    <div class="panel full"><h2>4 หัวข้อที่เลือก: เปรียบเทียบระหว่างไฟล์</h2><div id="topicChart" class="chart"></div></div>
-    <div class="panel"><h2>Citations ตามหัวข้อ</h2><div id="citationChart" class="chart"></div></div>
-    <div class="panel"><h2>แหล่งตีพิมพ์ที่พบมากที่สุด</h2><div id="sourceChart" class="chart"></div></div>
+    <div class="panel">
+      <div class="panel-head"><div><h2>จำนวนเอกสารจากแต่ละไฟล์</h2><div class="desc">ตรวจสอบความสมดุลของชุดข้อมูลที่นำมาเปรียบเทียบ</div></div></div>
+      <div id="fileChart" class="chart"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div><h2>ประเภทของเอกสาร</h2><div class="desc">ภาพรวมชนิดเอกสารที่ปรากฏใน Scopus exports</div></div></div>
+      <div id="typeChart" class="chart"></div>
+    </div>
+
     <div class="panel full">
-      <h2>บทความที่ถูกอ้างอิงสูงสุด</h2>
+      <div class="panel-head"><div><h2>4 Research Themes: ไฟล์ 1 เทียบกับ ไฟล์ 2</h2><div class="desc">ดูว่าหัวข้อใดเป็นจุดเด่นของแต่ละชุดข้อมูล</div></div></div>
+      <div id="topicChart" class="chart tall"></div>
+      <div id="topicCards" class="topic-grid"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div><h2>Citations ตาม Research Theme</h2><div class="desc">ใช้ดูผลกระทบเชิงการอ้างอิงของแต่ละหัวข้อ</div></div></div>
+      <div id="citationChart" class="chart"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div><h2>แหล่งตีพิมพ์ที่พบมากที่สุด</h2><div class="desc">Top publication sources จากทั้งสองไฟล์</div></div></div>
+      <div id="sourceChart" class="chart"></div>
+    </div>
+
+    <div class="panel full">
+      <div class="panel-head"><div><h2>บทความที่ถูกอ้างอิงสูงสุด</h2><div class="desc">จัดอันดับจากจำนวน citations ในชุดข้อมูล</div></div></div>
       <table>
-        <thead><tr><th>#</th><th>Title</th><th>Citations</th><th>Dataset</th></tr></thead>
+        <thead><tr><th style="width:45px">#</th><th>Title</th><th style="width:100px">Citations</th><th style="width:90px">Dataset</th></tr></thead>
         <tbody>
+          
           <tr><td>1</td><td>3D CAD model dynamic clustering based on inertial feature encoder</td><td><b>25</b></td><td>ไฟล์ 1</td></tr><tr><td>2</td><td>HoLa: B-Rep Generation using a Holistic Latent Representation</td><td><b>22</b></td><td>ไฟล์ 1</td></tr><tr><td>3</td><td>Unified residential floor plan generation with multimodal inputs</td><td><b>19</b></td><td>ไฟล์ 1</td></tr><tr><td>4</td><td>Personalized colorectal cancer risk assessment through explainable AI and Gut microbiome profiling</td><td><b>19</b></td><td>ไฟล์ 2</td></tr><tr><td>5</td><td>Convolutional neural networks for construction safety: A technical review of computer vision applications</td><td><b>16</b></td><td>ไฟล์ 1</td></tr><tr><td>6</td><td>MixNet: A Runtime Reconfigurable Optical-Electrical Fabric for Distributed Mixture-of-Experts Training</td><td><b>13</b></td><td>ไฟล์ 1</td></tr><tr><td>7</td><td>MILo: Mesh-In-the-Loop Gaussian Splatting for Detailed and Efficient Surface Reconstruction</td><td><b>13</b></td><td>ไฟล์ 1</td></tr><tr><td>8</td><td>Text semantics to controllable design: A residential layout generation method based on stable diffusion model</td><td><b>12</b></td><td>ไฟล์ 1</td></tr><tr><td>9</td><td>From Temporal to Spatial: Designing Spatialized Interactions with Segmented-audios in Immersive Environments for Active Engagement with Performing Arts Intangible Cultural Heritage</td><td><b>12</b></td><td>ไฟล์ 1</td></tr><tr><td>10</td><td>Artificial Intelligence-Assisted Clinical Decision-Making: A Perspective on Advancing Personalized Precision Medicine for Elderly Diabetes Patients</td><td><b>9</b></td><td>ไฟล์ 2</td></tr><tr><td>11</td><td>Automatic reconstruction of 3D topology optimization to editable CAD model with rotation minimizing frames</td><td><b>9</b></td><td>ไฟล์ 1</td></tr><tr><td>12</td><td>Artificial intelligence in medical image analysis and molecular diagnostics: recent advances and applications</td><td><b>9</b></td><td>ไฟล์ 2</td></tr>
+        
         </tbody>
       </table>
     </div>
+
+    <div class="panel full">
+      <div class="panel-head"><div><h2>Key Findings</h2><div class="desc">ประเด็นสำคัญที่สามารถนำไปเขียนในส่วน Analysis / Discussion</div></div></div>
+      <div class="insights">
+        <div class="insight"><b>01 — 3D/CAD เป็นจุดเด่นของไฟล์ 1</b>129 จาก 140 บทความในธีมนี้อยู่ในไฟล์ 1 แสดงให้เห็นความเข้มข้นของงานวิจัยด้าน 3D/CAD และ computational design</div>
+        <div class="insight"><b>02 — Generative AI เป็นจุดเด่นของไฟล์ 2</b>128 จาก 159 บทความอยู่ในไฟล์ 2 สะท้อนน้ำหนักของงานวิจัยด้าน Generative AI และ creative design</div>
+        <div class="insight"><b>03 — Computer Vision เชื่อมสองไฟล์</b>ไฟล์ 1 มี 33 บทความ และไฟล์ 2 มี 38 บทความ จึงเป็น theme ที่มีการกระจายค่อนข้างสมดุล</div>
+        <div class="insight"><b>04 — Citation สูงสุดอยู่ใน 3D/CAD</b>ธีม 3D/CAD มี citations รวม 284 ซึ่งสูงที่สุดใน 4 themes ที่เลือก</div>
+      </div>
+    </div>
   </section>
 
-  <section class="panel" style="margin-top:18px;">
-    <h2>วิเคราะห์ 4 หัวข้อ</h2>
-    <div class='topic'><b>3D/CAD &amp; Computational Design</b>พบ 140 บทความ; ไฟล์ 1 = 129, ไฟล์ 2 = 11; citations รวม 284; เฉลี่ย 2.03 citations/บทความ</div><div class='topic'><b>Generative AI &amp; Creative Design</b>พบ 159 บทความ; ไฟล์ 1 = 31, ไฟล์ 2 = 128; citations รวม 202; เฉลี่ย 1.27 citations/บทความ</div><div class='topic'><b>Computer Vision &amp; Intelligent Perception</b>พบ 71 บทความ; ไฟล์ 1 = 33, ไฟล์ 2 = 38; citations รวม 95; เฉลี่ย 1.34 citations/บทความ</div><div class='topic'><b>Optimization, Robotics &amp; Intelligent Control</b>พบ 47 บทความ; ไฟล์ 1 = 29, ไฟล์ 2 = 18; citations รวม 67; เฉลี่ย 1.43 citations/บทความ</div>
-    <p class="note">หมายเหตุ: การจัดกลุ่มเป็น thematic scan จากคำที่ปรากฏใน Title จึงสามารถซ้อนทับกันได้ เช่น บทความหนึ่งอาจอยู่ทั้ง Generative AI และ Computer Vision</p>
-  </section>
-
-  <section class="panel" style="margin-top:18px;">
-    <h2>ข้อสรุปที่นำไปทำรายงานได้</h2>
-    <ul><li>ไฟล์ 1 เด่นมากด้าน 3D/CAD และ computational design: 129 จาก 140 รายการที่เข้ากลุ่มนี้มาจากไฟล์ 1</li><li>ไฟล์ 2 เด่นด้าน Generative AI &amp; Creative Design: 128 จาก 159 รายการในธีมนี้มาจากไฟล์ 2</li><li>Computer Vision เป็นธีมที่เชื่อมสองไฟล์ได้ดีที่สุด เพราะมีสัดส่วนจากทั้งไฟล์ 1 และไฟล์ 2 ค่อนข้างใกล้กัน</li><li>บทความที่ถูกอ้างอิงสูงสุดในชุดข้อมูลคือ “3D CAD model dynamic clustering based on inertial feature encoder” (25 citations)</li><li>ข้อมูลทั้งสองไฟล์อยู่ที่ปี 2025 ทั้งหมด จึงเหมาะกับการทำ thematic comparison มากกว่าการทำ time-series trend</li></ul>
-    <p class="note">หากจะทำงานต่อ แนะนำให้ใช้ 4 theme นี้เป็นตัวตั้ง แล้วเพิ่มการวิเคราะห์ Author, Source, Citation, Open Access และคำสำคัญจาก Abstract/Keywords หากมีข้อมูล เพื่อให้ thematic analysis แม่นยำขึ้น</p>
-  </section>
-
-  <div class="footer">สร้างจาก Scopus exports ที่อัปโหลดในบทสนทนานี้ • ข้อมูลทั้งหมดเป็นปี 2025</div>
+  <div class="footer">Scopus Research Visualization • วิเคราะห์จากข้อมูลที่อัปโหลดในบทสนทนานี้</div>
 </div>
-
 <script>
 const fileData = [{"Dataset": "ไฟล์ 1", "Documents": 300}, {"Dataset": "ไฟล์ 2", "Documents": 300}];
 const typeData = [{"Type": "Article", "Documents": 390}, {"Type": "Conference paper", "Documents": 163}, {"Type": "Review", "Documents": 42}, {"Type": "Editorial", "Documents": 3}, {"Type": "Book", "Documents": 1}, {"Type": "Conference review", "Documents": 1}];
@@ -91,7 +172,7 @@ const sourceData = [{"Source title": "ShodhKosh: Journal of Visual and Performin
 
 const common = {
   paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
-  margin:{l:55,r:20,t:25,b:75}, font:{family:'Inter, Arial, Tahoma', color:'#374151'},
+  margin:{l:55,r:25,t:20,b:90}, font:{family:'Inter, Arial, Tahoma', color:'#475467'},
   hoverlabel:{font:{size:13}}
 };
 
@@ -120,6 +201,19 @@ Plotly.newPlot('sourceChart', [{
   y:sourceData.map(d=>d['Source title']).reverse(),
   type:'bar', orientation:'h', text:sourceData.map(d=>d.Documents).reverse(), textposition:'auto'
 }], {...common, margin:{l:270,r:20,t:25,b:45}, xaxis:{title:'Documents'}, showlegend:false}, {responsive:true, displaylogo:false});
+
+const tc = document.getElementById('topicCards');
+tc.innerHTML = topicData.map((d,i) => `
+  <div class="topic">
+    <div class="topic-title">${i+1}. ${d.Topic}</div>
+    <div class="topic-num">${d.Total}</div>
+    <div class="topic-meta">บทความทั้งหมด • ไฟล์ 1: ${d.File1} • ไฟล์ 2: ${d.File2}</div>
+    <div class="topic-meta">Citations: ${d.Citations} • เฉลี่ย ${d.AvgCitations}/บทความ</div>
+  </div>
+`).join('');
+
 </script>
 </body>
+</html>
+
 </html>
