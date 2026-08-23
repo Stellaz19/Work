@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scopus Bibliometric Dashboard</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.3/papaparse.min.js"></script>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#172033;font-family:Arial,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#0f172a,#2563eb);color:#fff;padding:28px 5%}
+header h1{margin:0 0 7px;font-size:28px}header p{margin:0;opacity:.85}
+.wrap{width:92%;max-width:1500px;margin:22px auto}.card{background:#fff;border:1px solid #e5e7eb;border-radius:15px;padding:18px;margin-bottom:18px;box-shadow:0 3px 12px #00000008}
+.controls{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr auto auto;gap:10px;align-items:end}
+label{display:block;font-size:12px;font-weight:bold;color:#667085;margin-bottom:5px}
+input,select{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:9px;background:#fff}
+button{padding:10px 14px;border:0;border-radius:9px;background:#2563eb;color:#fff;font-weight:bold;cursor:pointer}
+button.gray{background:#e5e7eb;color:#111827}
+.status{font-size:13px;color:#667085;margin-top:10px}.error{color:#dc2626;font-weight:bold}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:13px}.kpi{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px}
+.kpi small{color:#667085}.kpi b{display:block;font-size:27px;margin-top:5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+.chart{height:390px}.tall{height:500px}h2{font-size:18px;margin:0 0 4px}.sub{font-size:12px;color:#667085;margin-bottom:10px}
+#network{height:580px;border:1px solid #e5e7eb;border-radius:10px}
+.table{overflow:auto;max-height:500px}table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:9px;border-bottom:1px solid #e5e7eb;text-align:left;vertical-align:top}th{position:sticky;top:0;background:#f8fafc}
+.title{min-width:300px}.badge{background:#eef2ff;color:#3730a3;border-radius:20px;padding:3px 8px}
+.help{background:#eff6ff;border-left:4px solid #2563eb;padding:12px;margin-top:12px;font-size:13px}
+@media(max-width:1100px){.controls{grid-template-columns:1fr 1fr 1fr}.kpis{grid-template-columns:repeat(3,1fr)}.grid2,.grid3{grid-template-columns:1fr}}
+@media(max-width:650px){.controls,.kpis{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><h1>Scopus Bibliometric Visualization Dashboard</h1><p>Interactive EDA / Bibliometric overview</p></header>
+
+<div class="wrap">
+
+<div class="card">
+  <div class="controls">
+    <div><label>Search title / author / source / keyword</label><input id="search" placeholder="Search..."></div>
+    <div><label>Year</label><select id="year"><option value="ALL">All years</option></select></div>
+    <div><label>Document Type</label><select id="type"><option value="ALL">All types</option></select></div>
+    <div><label>Open Access</label><select id="oa"><option value="ALL">All</option></select></div>
+    <div><label>Top Keywords</label><select id="top"><option>10</option><option selected>15</option><option>20</option><option>30</option><option>50</option></select></div>
+    <button id="choose">Choose CSV</button><button class="gray" id="reset">Reset</button>
+  </div>
+  <input id="file" type="file" accept=".csv,text/csv" style="display:none">
+  <div id="status" class="status">กำลังโหลด scopus_data.csv ...</div>
+  <div class="help">
+    <b>ถ้าข้อมูลไม่ขึ้น:</b> กด <b>Choose CSV</b> แล้วเลือกไฟล์ <b>scopus_data.csv</b> จากเครื่องได้ทันที
+    วิธีนี้ใช้ได้แม้เปิด HTML ด้วยการดับเบิลคลิก และไม่ต้องแก้โค้ด
+  </div>
+</div>
+
+<div class="kpis">
+<div class="kpi"><small>Documents</small><b id="docs">-</b></div>
+<div class="kpi"><small>Unique Keywords</small><b id="keywords">-</b></div>
+<div class="kpi"><small>Total Citations</small><b id="cites">-</b></div>
+<div class="kpi"><small>Publication Years</small><b id="years">-</b></div>
+<div class="kpi"><small>Sources / Journals</small><b id="sources">-</b></div>
+</div>
+
+<div class="grid2">
+<div class="card"><h2>Publication Trend</h2><div class="sub">Documents by year</div><div id="yearChart" class="chart"></div></div>
+<div class="card"><h2>Citation Trend</h2><div class="sub">Citations by publication year</div><div id="citeChart" class="chart"></div></div>
+</div>
+
+<div class="grid2">
+<div class="card"><h2>Top Keywords</h2><div class="sub">Author Keywords + Index Keywords</div><div id="keywordChart" class="chart"></div></div>
+<div class="card"><h2>Keyword Trend Heatmap</h2><div class="sub">Keyword frequency by year</div><div id="heatmap" class="chart tall"></div></div>
+</div>
+
+<div class="grid3">
+<div class="card"><h2>Document Types</h2><div id="typeChart" class="chart"></div></div>
+<div class="card"><h2>Top Sources</h2><div id="sourceChart" class="chart"></div></div>
+<div class="card"><h2>Open Access</h2><div id="oaChart" class="chart"></div></div>
+</div>
+
+<div class="card"><h2>Keyword Co-occurrence Network</h2><div class="sub">Connections mean keywords occur in the same publication</div><div id="network"></div></div>
+
+<div class="grid2">
+<div class="card"><h2>Most Cited Publications</h2><div class="table"><table><thead><tr><th>Title</th><th>Year</th><th>Citations</th><th>Type</th></tr></thead><tbody id="cited"></tbody></table></div></div>
+<div class="card"><h2>Keyword Statistics</h2><div class="table"><table><thead><tr><th>Keyword</th><th>Frequency</th><th>Years</th></tr></thead><tbody id="keywordTable"></tbody></table></div></div>
+</div>
+
+<div class="card"><h2>Filtered Publications</h2><div class="sub">แสดงสูงสุด 200 รายการตามตัวกรองปัจจุบัน</div>
+<div class="table"><table><thead><tr><th>Title</th><th>Authors</th><th>Year</th><th>Source</th><th>Keywords</th><th>Cited by</th><th>Link</th></tr></thead><tbody id="pubs"></tbody></table></div>
+</div>
+
+</div>
+
+<script>
+const CSV_NAME="scopus_data.csv";
+let DATA=[],FILTERED=[];
+
+const $=id=>document.getElementById(id);
+const text=v=>v==null?"":String(v).trim();
+const yearOf=r=>{let n=parseInt(text(r.Year),10);return Number.isFinite(n)?n:null};
+const citesOf=r=>{let n=parseInt(text(r["Cited by"]),10);return Number.isFinite(n)?n:0};
+const esc=s=>text(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+
+function kws(r){
+  return [r["Author Keywords"],r["Index Keywords"]].map(text).join(";")
+    .split(/[;|]/).map(x=>x.replace(/\s+/g," ").trim())
+    .filter(x=>x.length>1 && x.length<100 && !["nan","null","undefined"].includes(x.toLowerCase()));
+}
+function years(a){return [...new Set(a.filter(x=>x!=null))].sort((a,b)=>a-b)}
+function options(){
+  $("year").innerHTML='<option value="ALL">All years</option>'+years(DATA.map(yearOf)).map(y=>`<option>${y}</option>`).join("");
+  $("type").innerHTML='<option value="ALL">All types</option>'+[...new Set(DATA.map(r=>text(r["Document Type"])).filter(Boolean))].sort().map(x=>`<option>${esc(x)}</option>`).join("");
+  $("oa").innerHTML='<option value="ALL">All</option>'+[...new Set(DATA.map(r=>text(r["Open Access"])).filter(Boolean))].sort().map(x=>`<option>${esc(x)}</option>`).join("");
+}
+function filter(){
+  let q=text($("search").value).toLowerCase(), y=$("year").value,t=$("type").value,o=$("oa").value;
+  FILTERED=DATA.filter(r=>{
+    let hay=[r.Title,r.Authors,r["Author full names"],r["Source title"],r["Author Keywords"],r["Index Keywords"],r.Abstract].map(text).join(" ").toLowerCase();
+    return (!q||hay.includes(q))&&(y==="ALL"||String(yearOf(r))===y)&&(t==="ALL"||text(r["Document Type"])===t)&&(o==="ALL"||text(r["Open Access"])===o);
+  });
+  draw();
+}
+function keywordMap(){
+  let m=new Map();
+  FILTERED.forEach(r=>{
+    let seen=new Set();
+    kws(r).forEach(k=>{
+      let key=k.toLowerCase(); if(seen.has(key))return; seen.add(key);
+      if(!m.has(key))m.set(key,{label:k,n:0,ys:new Set()});
+      m.get(key).n++;if(yearOf(r)!=null)m.get(key).ys.add(yearOf(r));
+    });
+  });return m;
+}
+function lay(extra={}){return Object.assign({margin:{l:55,r:20,t:15,b:50},font:{family:"Arial",size:12},paper_bgcolor:"transparent",plot_bgcolor:"transparent"},extra)}
+function chart(id,data,layout){Plotly.react(id,data,layout,{responsive:true,displaylogo:false})}
+
+function draw(){
+  $("docs").textContent=FILTERED.length.toLocaleString();
+  let km=keywordMap(), src=new Set(), ys=new Set(), c=0;
+  FILTERED.forEach(r=>{kws(r).forEach(k=>{});if(text(r["Source title"]))src.add(text(r["Source title"]));if(yearOf(r)!=null)ys.add(yearOf(r));c+=citesOf(r)});
+  $("keywords").textContent=km.size.toLocaleString();$("cites").textContent=c.toLocaleString();$("years").textContent=ys.size.toLocaleString();$("sources").textContent=src.size.toLocaleString();
+
+  let ym={};FILTERED.forEach(r=>{let y=yearOf(r);if(y!=null)ym[y]=(ym[y]||0)+1});
+  let ya=Object.keys(ym).sort((a,b)=>a-b);
+  chart("yearChart",[{x:ya,y:ya.map(y=>ym[y]),type:"scatter",mode:"lines+markers"}],lay({xaxis:{title:"Year"},yaxis:{title:"Documents"}}));
+
+  let cm={};FILTERED.forEach(r=>{let y=yearOf(r);if(y!=null)cm[y]=(cm[y]||0)+citesOf(r)});
+  chart("citeChart",[{x:Object.keys(cm).sort((a,b)=>a-b),y:Object.keys(cm).sort((a,b)=>a-b).map(y=>cm[y]),type:"bar"}],lay({xaxis:{title:"Year"},yaxis:{title:"Citations"}}));
+
+  let n=+$("top").value, top=[...km.values()].sort((a,b)=>b.n-a.n).slice(0,n).reverse();
+  chart("keywordChart",[{x:top.map(x=>x.n),y:top.map(x=>x.label),type:"bar",orientation:"h"}],lay({margin:{l:190,r:20,t:15,b:45},xaxis:{title:"Frequency"},yaxis:{automargin:true}}));
+
+  let yrs=years(FILTERED.map(yearOf)), hk=top.slice(0,20);
+  let z=hk.map(k=>yrs.map(y=>FILTERED.filter(r=>yearOf(r)===y&&kws(r).some(x=>x.toLowerCase()===k.label.toLowerCase())).length));
+  chart("heatmap",[{z,x:yrs,y:hk.map(k=>k.label),type:"heatmap"}],lay({margin:{l:190,r:20,t:15,b:50},yaxis:{automargin:true}}));
+
+  let types={};FILTERED.forEach(r=>{let x=text(r["Document Type"])||"Unknown";types[x]=(types[x]||0)+1});
+  chart("typeChart",[{labels:Object.keys(types),values:Object.values(types),type:"pie",hole:.4}],lay());
+
+  let sources={};FILTERED.forEach(r=>{let x=text(r["Source title"])||"Unknown";sources[x]=(sources[x]||0)+1});
+  let sa=Object.entries(sources).sort((a,b)=>b[1]-a[1]).slice(0,12).reverse();
+  chart("sourceChart",[{x:sa.map(x=>x[1]),y:sa.map(x=>x[0]),type:"bar",orientation:"h"}],lay({margin:{l:180,r:20,t:15,b:45},yaxis:{automargin:true}}));
+
+  let oa={};FILTERED.forEach(r=>{let x=text(r["Open Access"])||"Not specified";oa[x]=(oa[x]||0)+1});
+  chart("oaChart",[{labels:Object.keys(oa),values:Object.values(oa),type:"pie",hole:.4}],lay());
+
+  network(top);
+
+  $("cited").innerHTML=[...FILTERED].sort((a,b)=>citesOf(b)-citesOf(a)).slice(0,15).map(r=>`<tr><td class="title">${esc(r.Title)}</td><td>${esc(r.Year)}</td><td><span class="badge">${citesOf(r)}</span></td><td>${esc(r["Document Type"])}</td></tr>`).join("");
+  $("keywordTable").innerHTML=[...km.values()].sort((a,b)=>b.n-a.n).slice(0,50).map(k=>`<tr><td>${esc(k.label)}</td><td>${k.n}</td><td>${[...k.ys].sort((a,b)=>a-b).join(", ")}</td></tr>`).join("");
+  $("pubs").innerHTML=FILTERED.slice(0,200).map(r=>`<tr><td class="title">${esc(r.Title)}</td><td>${esc(r.Authors)}</td><td>${esc(r.Year)}</td><td>${esc(r["Source title"])}</td><td>${esc(kws(r).slice(0,6).join("; "))}</td><td>${citesOf(r)}</td><td>${r.Link?`<a href="${esc(r.Link)}" target="_blank">Scopus</a>`:""}</td></tr>`).join("");
+  $("status").textContent=`แสดง ${FILTERED.length.toLocaleString()} จาก ${DATA.length.toLocaleString()} รายการ`;
+}
+function network(top){
+  let allowed=new Set(top.map(x=>x.label.toLowerCase())), em=new Map();
+  FILTERED.forEach(r=>{
+    let a=[...new Set(kws(r).map(x=>x.toLowerCase()).filter(x=>allowed.has(x)))];
+    for(let i=0;i<a.length;i++)for(let j=i+1;j<a.length;j++){let id=[a[i],a[j]].sort().join("|||");em.set(id,(em.get(id)||0)+1)}
+  });
+  let nodes=top.map((x,i)=>({id:x.label.toLowerCase(),label:x.label,value:5+Math.sqrt(x.n)*5}));
+  let edges=[...em].filter(x=>x[1]>=2).map(x=>{let p=x[0].split("|||");return{from:p[0],to:p[1],value:x[1]}});
+  $("network").innerHTML="";
+  new vis.Network($("network"),{nodes:new vis.DataSet(nodes),edges:new vis.DataSet(edges)},{
+    physics:{barnesHut:{gravitationalConstant:-2500,springLength:140},stabilization:true},
+    interaction:{hover:true,navigationButtons:true},nodes:{shape:"dot",scaling:{min:10,max:45}},edges:{smooth:true}
+  });
+}
+function parse(file,fromUpload=false){
+  $("status").textContent="กำลังอ่านข้อมูล...";
+  Papa.parse(file,{header:true,skipEmptyLines:true,complete:r=>{
+    DATA=r.data.filter(x=>x.Title||x.EID||x.Abstract);
+    if(!DATA.length){$("status").innerHTML='<span class="error">อ่าน CSV ได้ แต่ไม่พบข้อมูล</span>';return}
+    options();filter();
+  },error:e=>{$("status").innerHTML='<span class="error">อ่าน CSV ไม่สำเร็จ: '+esc(e.message||e)+'</span>'}});
+}
+function load(){
+  fetch(CSV_NAME+"?v="+Date.now()).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.blob()})
+  .then(b=>parse(b)).catch(e=>{
+    $("status").innerHTML='<span class="error">โหลด scopus_data.csv ไม่ได้ ('+esc(e.message)+')</span> — กด Choose CSV เพื่อเลือกไฟล์เอง';
+  });
+}
+$("choose").onclick=()=>$("file").click();
+$("file").onchange=e=>{if(e.target.files[0])parse(e.target.files[0],true)};
+["search","year","type","oa","top"].forEach(id=>$ (id).addEventListener(id==="search"?"input":"change",filter));
+$("reset").onclick=()=>{$("search").value="";$("year").value="ALL";$("type").value="ALL";$("oa").value="ALL";$("top").value="15";filter()};
+load();
+</script>
+</body>
+</html>
