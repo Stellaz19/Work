@@ -6,171 +6,2774 @@
 
 <title>Scopus Bibliometric Dashboard</title>
 
+<!-- Plotly -->
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+<!-- PapaParse -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.3/papaparse.min.js"></script>
+
+<!-- Vis Network -->
 <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 
 <style>
-/* CSS ของ Dashboard ทั้งหมด */
-</style>
-</head>
 
-<body>
+* {
+    box-sizing: border-box;
+}
 
-<header>
-    <h1>Scopus Bibliometric Visualization Dashboard</h1>
-    <p>Interactive EDA / Bibliometric overview</p>
-</header>
-
-<div class="wrap">
-
-    <!-- Search / Filters -->
-    <div class="card">
-        ...
-    </div>
-
-    <!-- KPI -->
-    <div class="kpis">
-        ...
-    </div>
-
-    <!-- Publication / Citation -->
-    <div class="grid2">
-        ...
-    </div>
-
-    <!-- Keywords -->
-    <div class="grid2">
-        ...
-    </div>
-
-    <!-- Document / Source / OA -->
-    <div class="grid3">
-        ...
-    </div>
-
-    <!-- Network -->
-    <div class="card">
-        ...
-    </div>
-
-    <!-- Tables -->
-    <div class="grid2">
-        ...
-    </div>
-
-</div>
-
-<script>
-
-/*
- * ข้อมูลจาก scopus_data.csv
- * ถูกฝังไว้ตรงนี้โดยตรง
- */
-const DATA = [
-    ...
-];
+body {
+    margin: 0;
+    background: #f4f7fb;
+    color: #172033;
+    font-family: Arial, Segoe UI, sans-serif;
+}
 
 /* =========================
-   Data Processing
-   ========================= */
+   HEADER
+========================= */
 
-function kws(r) {
-    return [
-        r["Author Keywords"],
-        r["Index Keywords"]
-    ]
-    .map(text)
-    .join(";")
-    .split(/[;|]/)
-    ...
+header {
+    background: linear-gradient(135deg, #0f172a, #2563eb);
+    color: white;
+    padding: 28px 5%;
+}
+
+header h1 {
+    margin: 0 0 7px;
+    font-size: 28px;
+}
+
+header p {
+    margin: 0;
+    opacity: .85;
 }
 
 
 /* =========================
-   Filtering
-   ========================= */
+   MAIN
+========================= */
 
-function filter() {
-    ...
+.wrap {
+    width: 92%;
+    max-width: 1500px;
+    margin: 22px auto;
+}
+
+
+/* =========================
+   CARD
+========================= */
+
+.card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 15px;
+    padding: 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 12px #00000008;
+}
+
+
+/* =========================
+   CONTROLS
+========================= */
+
+.controls {
+    display: grid;
+    grid-template-columns:
+        2fr
+        1fr
+        1fr
+        1fr
+        auto;
+    gap: 10px;
+    align-items: end;
+}
+
+label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    color: #667085;
+    margin-bottom: 5px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    background: white;
+}
+
+button {
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 9px;
+    background: #2563eb;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: .9;
+}
+
+button.gray {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+.status {
+    font-size: 13px;
+    color: #667085;
+    margin-top: 10px;
+}
+
+.error {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+.success {
+    color: #16a34a;
+    font-weight: bold;
 }
 
 
 /* =========================
    KPI
-   ========================= */
+========================= */
 
-function draw() {
-    ...
+.kpis {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 13px;
+}
+
+.kpi {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 16px;
+}
+
+.kpi small {
+    color: #667085;
+}
+
+.kpi b {
+    display: block;
+    font-size: 27px;
+    margin-top: 5px;
 }
 
 
 /* =========================
-   Publication Trend
-   ========================= */
+   GRID
+========================= */
 
-chart(
-    "yearChart",
-    ...
-);
+.grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
 
-
-/* =========================
-   Citation Trend
-   ========================= */
-
-chart(
-    "citeChart",
-    ...
-);
-
-
-/* =========================
-   Keyword Chart
-   ========================= */
-
-chart(
-    "keywordChart",
-    ...
-);
-
-
-/* =========================
-   Heatmap
-   ========================= */
-
-chart(
-    "heatmap",
-    ...
-);
-
-
-/* =========================
-   Keyword Network
-   ========================= */
-
-function network(top) {
-    ...
+.grid3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
 }
 
 
 /* =========================
-   Event handlers
-   ========================= */
+   CHART
+========================= */
 
-["search","year","type","oa","top"]
-.forEach(id =>
-    $(id).addEventListener(
-        id === "search" ? "input" : "change",
-        filter
-    )
-);
+.chart {
+    height: 390px;
+}
 
-$("reset").onclick = () => {
-    ...
+
+/* =========================
+   HEADINGS
+========================= */
+
+h2 {
+    font-size: 18px;
+    margin: 0 0 4px;
+}
+
+.sub {
+    font-size: 12px;
+    color: #667085;
+    margin-bottom: 10px;
+}
+
+
+/* =========================
+   NETWORK
+========================= */
+
+#network {
+    height: 580px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+
+/* =========================
+   TABLE
+========================= */
+
+.table {
+    overflow: auto;
+    max-height: 500px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13px;
+}
+
+th,
+td {
+    padding: 9px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    position: sticky;
+    top: 0;
+    background: #f8fafc;
+    z-index: 1;
+}
+
+.title {
+    min-width: 300px;
+}
+
+.badge {
+    background: #eef2ff;
+    color: #3730a3;
+    border-radius: 20px;
+    padding: 3px 8px;
+}
+
+
+/* =========================
+   HELP
+========================= */
+
+.help {
+    background: #eff6ff;
+    border-left: 4px solid #2563eb;
+    padding: 12px;
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1100px) {
+
+    .controls {
+        grid-template-columns:
+            1fr
+            1fr
+            1fr;
+    }
+
+    .kpis {
+        grid-template-columns:
+            repeat(3, 1fr);
+    }
+
+    .grid2,
+    .grid3 {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media(max-width:650px) {
+
+    .controls,
+    .kpis {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header>
+
+    <h1>
+        Scopus Bibliometric Visualization Dashboard
+    </h1>
+
+    <p>
+        Interactive EDA / Bibliometric overview
+    </p>
+
+</header>
+
+
+<div class="wrap">
+
+
+<!-- =====================================================
+     FILTER CARD
+===================================================== -->
+
+<div class="card">
+
+    <div class="controls">
+
+
+        <!-- SEARCH -->
+
+        <div>
+
+            <label>
+                Search title / author / source / keyword
+            </label>
+
+            <input
+                id="search"
+                placeholder="Search..."
+            >
+
+        </div>
+
+
+        <!-- YEAR -->
+
+        <div>
+
+            <label>
+                Year
+            </label>
+
+            <select id="year">
+
+                <option value="ALL">
+                    All years
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- DOCUMENT TYPE -->
+
+        <div>
+
+            <label>
+                Document Type
+            </label>
+
+            <select id="type">
+
+                <option value="ALL">
+                    All types
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- TOP KEYWORDS -->
+
+        <div>
+
+            <label>
+                Top Keywords
+            </label>
+
+            <select id="top">
+
+                <option>10</option>
+
+                <option selected>
+                    15
+                </option>
+
+                <option>20</option>
+
+                <option>30</option>
+
+                <option>50</option>
+
+            </select>
+
+        </div>
+
+
+        <!-- RESET -->
+
+        <button
+            class="gray"
+            id="reset"
+        >
+            Reset
+        </button>
+
+
+    </div>
+
+
+    <div
+        id="status"
+        class="status"
+    >
+        กำลังโหลด scopus_data.csv ...
+    </div>
+
+
+    <div class="help">
+
+        <b>Data:</b>
+
+        Dashboard นี้จะอ่านไฟล์
+
+        <b>scopus_data.csv</b>
+
+        อัตโนมัติจากโฟลเดอร์เดียวกับ HTML
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     KPI
+===================================================== -->
+
+<div class="kpis">
+
+
+    <div class="kpi">
+
+        <small>
+            Documents
+        </small>
+
+        <b id="docs">
+            -
+        </b>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <small>
+            Unique Keywords
+        </small>
+
+        <b id="keywords">
+            -
+        </b>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <small>
+            Total Citations
+        </small>
+
+        <b id="cites">
+            -
+        </b>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <small>
+            Publication Years
+        </small>
+
+        <b id="years">
+            -
+        </b>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <small>
+            Sources / Journals
+        </small>
+
+        <b id="sources">
+            -
+        </b>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     PUBLICATION + CITATION
+===================================================== -->
+
+<div class="grid2">
+
+
+    <div class="card">
+
+        <h2>
+            Publication Trend
+        </h2>
+
+        <div class="sub">
+            Documents by year
+        </div>
+
+        <div
+            id="yearChart"
+            class="chart"
+        ></div>
+
+    </div>
+
+
+
+    <div class="card">
+
+        <h2>
+            Citation Trend
+        </h2>
+
+        <div class="sub">
+            Citations by publication year
+        </div>
+
+        <div
+            id="citeChart"
+            class="chart"
+        ></div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     KEYWORDS + DOCUMENT TYPE
+===================================================== -->
+
+<div class="grid2">
+
+
+    <div class="card">
+
+        <h2>
+            Top Keywords
+        </h2>
+
+        <div class="sub">
+            Author Keywords + Index Keywords
+        </div>
+
+        <div
+            id="keywordChart"
+            class="chart"
+        ></div>
+
+    </div>
+
+
+
+    <div class="card">
+
+        <h2>
+            Document Types
+        </h2>
+
+        <div
+            id="typeChart"
+            class="chart"
+        ></div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     TOP SOURCES
+===================================================== -->
+
+<div class="card">
+
+    <h2>
+        Top Sources
+    </h2>
+
+    <div class="sub">
+        Top journals / publication sources
+    </div>
+
+    <div
+        id="sourceChart"
+        class="chart"
+    ></div>
+
+</div>
+
+
+
+<!-- =====================================================
+     KEYWORD NETWORK
+===================================================== -->
+
+<div class="card">
+
+    <h2>
+        Keyword Co-occurrence Network
+    </h2>
+
+    <div class="sub">
+
+        Connections mean keywords occur
+        in the same publication
+
+    </div>
+
+    <div id="network"></div>
+
+</div>
+
+
+
+<!-- =====================================================
+     MOST CITED + KEYWORD STATISTICS
+===================================================== -->
+
+<div class="grid2">
+
+
+    <!-- MOST CITED -->
+
+    <div class="card">
+
+        <h2>
+            Most Cited Publications
+        </h2>
+
+        <div class="table">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Title
+                        </th>
+
+                        <th>
+                            Year
+                        </th>
+
+                        <th>
+                            Citations
+                        </th>
+
+                        <th>
+                            Type
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody
+                    id="cited"
+                ></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- KEYWORD STATISTICS -->
+
+    <div class="card">
+
+        <h2>
+            Keyword Statistics
+        </h2>
+
+        <div class="table">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Keyword
+                        </th>
+
+                        <th>
+                            Frequency
+                        </th>
+
+                        <th>
+                            Years
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody
+                    id="keywordTable"
+                ></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     PUBLICATIONS
+===================================================== -->
+
+<div class="card">
+
+    <h2>
+        Filtered Publications
+    </h2>
+
+    <div class="sub">
+
+        แสดงสูงสุด 200 รายการ
+        ตามตัวกรองปัจจุบัน
+
+    </div>
+
+
+    <div class="table">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Title
+                    </th>
+
+                    <th>
+                        Authors
+                    </th>
+
+                    <th>
+                        Year
+                    </th>
+
+                    <th>
+                        Source
+                    </th>
+
+                    <th>
+                        Keywords
+                    </th>
+
+                    <th>
+                        Cited by
+                    </th>
+
+                    <th>
+                        Link
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody
+                id="pubs"
+            ></tbody>
+
+
+        </table>
+
+    </div>
+
+</div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+/* =====================================================
+   CSV FILE
+===================================================== */
+
+const CSV_NAME = "scopus_data.csv";
+
+
+let DATA = [];
+
+let FILTERED = [];
+
+
+
+/* =====================================================
+   SHORTCUT
+===================================================== */
+
+const $ = id =>
+    document.getElementById(id);
+
+
+
+/* =====================================================
+   TEXT
+===================================================== */
+
+const text = value => {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+    return String(value).trim();
+
 };
 
-options();
-filter();
+
+
+/* =====================================================
+   YEAR
+===================================================== */
+
+const yearOf = row => {
+
+    let n =
+        parseInt(
+            text(row.Year),
+            10
+        );
+
+    return Number.isFinite(n)
+        ? n
+        : null;
+
+};
+
+
+
+/* =====================================================
+   CITATIONS
+===================================================== */
+
+const citesOf = row => {
+
+    let n =
+        parseInt(
+            text(row["Cited by"]),
+            10
+        );
+
+    return Number.isFinite(n)
+        ? n
+        : 0;
+
+};
+
+
+
+/* =====================================================
+   HTML ESCAPE
+===================================================== */
+
+const esc = value => {
+
+    return text(value).replace(
+        /[&<>"']/g,
+
+        function(m) {
+
+            return {
+
+                "&":"&amp;",
+                "<":"&lt;",
+                ">":"&gt;",
+                '"':"&quot;",
+                "'":"&#039;"
+
+            }[m];
+
+        }
+
+    );
+
+};
+
+
+
+/* =====================================================
+   KEYWORDS
+===================================================== */
+
+function kws(row) {
+
+    return [
+
+        row["Author Keywords"],
+
+        row["Index Keywords"]
+
+    ]
+
+    .map(text)
+
+    .join(";")
+
+    .split(/[;|]/)
+
+    .map(
+        x =>
+            x
+            .replace(/\s+/g, " ")
+            .trim()
+    )
+
+    .filter(
+        x =>
+
+            x.length > 1 &&
+
+            x.length < 100 &&
+
+            ![
+                "nan",
+                "null",
+                "undefined"
+            ]
+            .includes(
+                x.toLowerCase()
+            )
+
+    );
+
+}
+
+
+
+/* =====================================================
+   UNIQUE SORTED YEARS
+===================================================== */
+
+function years(array) {
+
+    return [
+
+        ...new Set(
+
+            array.filter(
+                x => x !== null
+            )
+
+        )
+
+    ]
+
+    .sort(
+        (a,b) => a-b
+    );
+
+}
+
+
+
+/* =====================================================
+   CREATE FILTER OPTIONS
+===================================================== */
+
+function options() {
+
+
+    /* YEAR */
+
+    $("year").innerHTML =
+
+        '<option value="ALL">All years</option>' +
+
+        years(
+            DATA.map(yearOf)
+        )
+
+        .map(
+            year =>
+                `<option>${year}</option>`
+        )
+
+        .join("");
+
+
+
+    /* DOCUMENT TYPE */
+
+    $("type").innerHTML =
+
+        '<option value="ALL">All types</option>' +
+
+        [
+
+            ...new Set(
+
+                DATA
+
+                .map(
+                    row =>
+                        text(
+                            row["Document Type"]
+                        )
+                )
+
+                .filter(Boolean)
+
+            )
+
+        ]
+
+        .sort()
+
+        .map(
+            value =>
+                `<option>${esc(value)}</option>`
+        )
+
+        .join("");
+
+}
+
+
+
+/* =====================================================
+   FILTER DATA
+===================================================== */
+
+function filter() {
+
+
+    const q =
+        text(
+            $("search").value
+        )
+        .toLowerCase();
+
+
+    const selectedYear =
+        $("year").value;
+
+
+    const selectedType =
+        $("type").value;
+
+
+
+    FILTERED =
+        DATA.filter(
+            row => {
+
+
+                const haystack = [
+
+                    row.Title,
+
+                    row.Authors,
+
+                    row["Author full names"],
+
+                    row["Source title"],
+
+                    row["Author Keywords"],
+
+                    row["Index Keywords"],
+
+                    row.Abstract
+
+                ]
+
+                .map(text)
+
+                .join(" ")
+
+                .toLowerCase();
+
+
+
+                return (
+
+                    (
+                        !q ||
+                        haystack.includes(q)
+                    )
+
+                    &&
+
+                    (
+                        selectedYear === "ALL" ||
+
+                        String(
+                            yearOf(row)
+                        ) === selectedYear
+                    )
+
+                    &&
+
+                    (
+                        selectedType === "ALL" ||
+
+                        text(
+                            row["Document Type"]
+                        ) === selectedType
+                    )
+
+                );
+
+            }
+
+        );
+
+
+    draw();
+
+}
+
+
+
+/* =====================================================
+   KEYWORD MAP
+===================================================== */
+
+function keywordMap() {
+
+
+    const map =
+        new Map();
+
+
+
+    FILTERED.forEach(
+        row => {
+
+
+            const seen =
+                new Set();
+
+
+
+            kws(row).forEach(
+                keyword => {
+
+
+                    const key =
+                        keyword.toLowerCase();
+
+
+
+                    if (
+                        seen.has(key)
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    seen.add(key);
+
+
+
+                    if (
+                        !map.has(key)
+                    ) {
+
+                        map.set(
+
+                            key,
+
+                            {
+
+                                label: keyword,
+
+                                n: 0,
+
+                                ys: new Set()
+
+                            }
+
+                        );
+
+                    }
+
+
+
+                    map.get(key).n++;
+
+
+
+                    const year =
+                        yearOf(row);
+
+
+
+                    if (
+                        year !== null
+                    ) {
+
+                        map
+                        .get(key)
+                        .ys
+                        .add(year);
+
+                    }
+
+                }
+
+            );
+
+        }
+
+    );
+
+
+    return map;
+
+}
+
+
+
+/* =====================================================
+   PLOTLY LAYOUT
+===================================================== */
+
+function lay(extra = {}) {
+
+
+    return Object.assign(
+
+        {
+
+            margin: {
+
+                l: 55,
+
+                r: 20,
+
+                t: 15,
+
+                b: 50
+
+            },
+
+            font: {
+
+                family:
+                    "Arial",
+
+                size:
+                    12
+
+            },
+
+            paper_bgcolor:
+                "transparent",
+
+            plot_bgcolor:
+                "transparent"
+
+        },
+
+        extra
+
+    );
+
+}
+
+
+
+/* =====================================================
+   PLOT
+===================================================== */
+
+function chart(
+    id,
+    data,
+    layout
+) {
+
+
+    Plotly.react(
+
+        id,
+
+        data,
+
+        layout,
+
+        {
+
+            responsive: true,
+
+            displaylogo: false
+
+        }
+
+    );
+
+}
+
+
+
+/* =====================================================
+   DRAW DASHBOARD
+===================================================== */
+
+function draw() {
+
+
+    /* =================================================
+       KPI
+    ================================================= */
+
+
+    $("docs").textContent =
+        FILTERED
+        .length
+        .toLocaleString();
+
+
+
+    const keywordData =
+        keywordMap();
+
+
+
+    const sources =
+        new Set();
+
+
+
+    const publicationYears =
+        new Set();
+
+
+
+    let totalCitations = 0;
+
+
+
+    FILTERED.forEach(
+        row => {
+
+
+            const source =
+                text(
+                    row["Source title"]
+                );
+
+
+            if (source) {
+
+                sources.add(source);
+
+            }
+
+
+
+            const year =
+                yearOf(row);
+
+
+            if (
+                year !== null
+            ) {
+
+                publicationYears
+                .add(year);
+
+            }
+
+
+
+            totalCitations +=
+                citesOf(row);
+
+        }
+
+    );
+
+
+
+    $("keywords").textContent =
+        keywordData
+        .size
+        .toLocaleString();
+
+
+
+    $("cites").textContent =
+        totalCitations
+        .toLocaleString();
+
+
+
+    $("years").textContent =
+        publicationYears
+        .size
+        .toLocaleString();
+
+
+
+    $("sources").textContent =
+        sources
+        .size
+        .toLocaleString();
+
+
+
+    /* =================================================
+       PUBLICATION TREND
+    ================================================= */
+
+
+    const yearCounts = {};
+
+
+
+    FILTERED.forEach(
+        row => {
+
+
+            const year =
+                yearOf(row);
+
+
+            if (
+                year !== null
+            ) {
+
+                yearCounts[year] =
+                    (
+                        yearCounts[year] ||
+                        0
+                    ) + 1;
+
+            }
+
+        }
+
+    );
+
+
+
+    const yearArray =
+        Object.keys(yearCounts)
+        .sort(
+            (a,b) => a-b
+        );
+
+
+
+    chart(
+
+        "yearChart",
+
+        [
+
+            {
+
+                x:
+                    yearArray,
+
+                y:
+                    yearArray.map(
+                        year =>
+                            yearCounts[year]
+                    ),
+
+                type:
+                    "scatter",
+
+                mode:
+                    "lines+markers"
+
+            }
+
+        ],
+
+        lay({
+
+            xaxis: {
+
+                title:
+                    "Year"
+
+            },
+
+            yaxis: {
+
+                title:
+                    "Documents"
+
+            }
+
+        })
+
+    );
+
+
+
+    /* =================================================
+       CITATION TREND
+    ================================================= */
+
+
+    const citationCounts = {};
+
+
+
+    FILTERED.forEach(
+        row => {
+
+
+            const year =
+                yearOf(row);
+
+
+            if (
+                year !== null
+            ) {
+
+                citationCounts[year] =
+
+                    (
+                        citationCounts[year] ||
+                        0
+                    )
+
+                    +
+
+                    citesOf(row);
+
+            }
+
+        }
+
+    );
+
+
+
+    const citationYears =
+        Object.keys(citationCounts)
+        .sort(
+            (a,b) => a-b
+        );
+
+
+
+    chart(
+
+        "citeChart",
+
+        [
+
+            {
+
+                x:
+                    citationYears,
+
+                y:
+                    citationYears.map(
+                        year =>
+                            citationCounts[year]
+                    ),
+
+                type:
+                    "bar"
+
+            }
+
+        ],
+
+        lay({
+
+            xaxis: {
+
+                title:
+                    "Year"
+
+            },
+
+            yaxis: {
+
+                title:
+                    "Citations"
+
+            }
+
+        })
+
+    );
+
+
+
+    /* =================================================
+       TOP KEYWORDS
+    ================================================= */
+
+
+    const topNumber =
+        +$("top").value;
+
+
+
+    const topKeywords =
+
+        [
+
+            ...keywordData.values()
+
+        ]
+
+        .sort(
+            (a,b) =>
+                b.n - a.n
+        )
+
+        .slice(
+            0,
+            topNumber
+        )
+
+        .reverse();
+
+
+
+    chart(
+
+        "keywordChart",
+
+        [
+
+            {
+
+                x:
+                    topKeywords.map(
+                        x => x.n
+                    ),
+
+                y:
+                    topKeywords.map(
+                        x => x.label
+                    ),
+
+                type:
+                    "bar",
+
+                orientation:
+                    "h"
+
+            }
+
+        ],
+
+        lay({
+
+            margin: {
+
+                l:
+                    190,
+
+                r:
+                    20,
+
+                t:
+                    15,
+
+                b:
+                    45
+
+            },
+
+            xaxis: {
+
+                title:
+                    "Frequency"
+
+            },
+
+            yaxis: {
+
+                automargin:
+                    true
+
+            }
+
+        })
+
+    );
+
+
+
+    /* =================================================
+       DOCUMENT TYPES
+    ================================================= */
+
+
+    const documentTypes = {};
+
+
+
+    FILTERED.forEach(
+        row => {
+
+
+            const type =
+
+                text(
+                    row["Document Type"]
+                )
+
+                ||
+
+                "Unknown";
+
+
+
+            documentTypes[type] =
+
+                (
+                    documentTypes[type] ||
+                    0
+                ) + 1;
+
+        }
+
+    );
+
+
+
+    chart(
+
+        "typeChart",
+
+        [
+
+            {
+
+                labels:
+                    Object.keys(
+                        documentTypes
+                    ),
+
+                values:
+                    Object.values(
+                        documentTypes
+                    ),
+
+                type:
+                    "pie",
+
+                hole:
+                    0.4
+
+            }
+
+        ],
+
+        lay()
+
+    );
+
+
+
+    /* =================================================
+       TOP SOURCES
+    ================================================= */
+
+
+    const sourceCounts = {};
+
+
+
+    FILTERED.forEach(
+        row => {
+
+
+            const source =
+
+                text(
+                    row["Source title"]
+                )
+
+                ||
+
+                "Unknown";
+
+
+
+            sourceCounts[source] =
+
+                (
+                    sourceCounts[source] ||
+                    0
+                ) + 1;
+
+        }
+
+    );
+
+
+
+    const topSources =
+
+        Object.entries(
+            sourceCounts
+        )
+
+        .sort(
+            (a,b) =>
+                b[1] - a[1]
+        )
+
+        .slice(
+            0,
+            12
+        )
+
+        .reverse();
+
+
+
+    chart(
+
+        "sourceChart",
+
+        [
+
+            {
+
+                x:
+                    topSources.map(
+                        x => x[1]
+                    ),
+
+                y:
+                    topSources.map(
+                        x => x[0]
+                    ),
+
+                type:
+                    "bar",
+
+                orientation:
+                    "h"
+
+            }
+
+        ],
+
+        lay({
+
+            margin: {
+
+                l:
+                    180,
+
+                r:
+                    20,
+
+                t:
+                    15,
+
+                b:
+                    45
+
+            },
+
+            yaxis: {
+
+                automargin:
+                    true
+
+            }
+
+        })
+
+    );
+
+
+
+    /* =================================================
+       NETWORK
+    ================================================= */
+
+
+    network(
+        topKeywords
+    );
+
+
+
+    /* =================================================
+       MOST CITED PUBLICATIONS
+    ================================================= */
+
+
+    $("cited").innerHTML =
+
+
+        [
+
+            ...FILTERED
+
+        ]
+
+        .sort(
+            (a,b) =>
+                citesOf(b) -
+                citesOf(a)
+        )
+
+        .slice(
+            0,
+            15
+        )
+
+        .map(
+            row =>
+
+
+                `<tr>
+
+                    <td class="title">
+
+                        ${esc(
+                            row.Title
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        ${esc(
+                            row.Year
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="badge">
+
+                            ${citesOf(row)}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        ${esc(
+                            row["Document Type"]
+                        )}
+
+                    </td>
+
+                </tr>`
+
+        )
+
+        .join("");
+
+
+
+    /* =================================================
+       KEYWORD STATISTICS
+    ================================================= */
+
+
+    $("keywordTable").innerHTML =
+
+
+        [
+
+            ...keywordData.values()
+
+        ]
+
+        .sort(
+            (a,b) =>
+                b.n - a.n
+        )
+
+        .slice(
+            0,
+            50
+        )
+
+        .map(
+            keyword =>
+
+
+                `<tr>
+
+                    <td>
+
+                        ${esc(
+                            keyword.label
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        ${keyword.n}
+
+                    </td>
+
+
+                    <td>
+
+                        ${
+                            [
+                                ...keyword.ys
+                            ]
+
+                            .sort(
+                                (a,b) =>
+                                    a-b
+                            )
+
+                            .join(", ")
+                        }
+
+                    </td>
+
+                </tr>`
+
+        )
+
+        .join("");
+
+
+
+    /* =================================================
+       PUBLICATION TABLE
+    ================================================= */
+
+
+    $("pubs").innerHTML =
+
+
+        FILTERED
+
+        .slice(
+            0,
+            200
+        )
+
+        .map(
+            row =>
+
+
+                `<tr>
+
+
+                    <td class="title">
+
+                        ${esc(
+                            row.Title
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        ${esc(
+                            row.Authors
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        ${esc(
+                            row.Year
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        ${esc(
+                            row["Source title"]
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        ${esc(
+
+                            kws(row)
+
+                            .slice(
+                                0,
+                                6
+                            )
+
+                            .join("; ")
+
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        ${citesOf(row)}
+
+                    </td>
+
+
+                    <td>
+
+                        ${
+                            row.Link
+
+                            ?
+
+                            `<a
+                                href="${esc(row.Link)}"
+                                target="_blank"
+                                rel="noopener"
+                            >
+                                Scopus
+                            </a>`
+
+                            :
+
+                            ""
+                        }
+
+                    </td>
+
+
+                </tr>`
+
+        )
+
+        .join("");
+
+
+
+    /* =================================================
+       STATUS
+    ================================================= */
+
+
+    $("status").innerHTML =
+
+        `<span class="success">
+
+            แสดง ${
+                FILTERED
+                .length
+                .toLocaleString()
+            }
+
+            จาก
+
+            ${
+                DATA
+                .length
+                .toLocaleString()
+            }
+
+            รายการ
+
+        </span>`;
+
+}
+
+
+
+/* =====================================================
+   NETWORK
+===================================================== */
+
+function network(
+    topKeywords
+) {
+
+
+    const allowed =
+        new Set(
+
+            topKeywords.map(
+                x =>
+                    x.label.toLowerCase()
+            )
+
+        );
+
+
+
+    const edgeMap =
+        new Map();
+
+
+
+    FILTERED.forEach(
+        row => {
+
+
+            const keywords =
+
+                [
+
+                    ...new Set(
+
+                        kws(row)
+
+                        .map(
+                            x =>
+                                x.toLowerCase()
+                        )
+
+                        .filter(
+                            x =>
+                                allowed.has(x)
+                        )
+
+                    )
+
+                ];
+
+
+
+            for (
+                let i = 0;
+                i < keywords.length;
+                i++
+            ) {
+
+
+                for (
+                    let j = i + 1;
+                    j < keywords.length;
+                    j++
+                ) {
+
+
+                    const id =
+
+                        [
+
+                            keywords[i],
+
+                            keywords[j]
+
+                        ]
+
+                        .sort()
+
+                        .join("|||");
+
+
+
+                    edgeMap.set(
+
+                        id,
+
+                        (
+                            edgeMap.get(id) ||
+                            0
+                        ) + 1
+
+                    );
+
+                }
+
+            }
+
+        }
+
+    );
+
+
+
+    const nodes =
+
+        topKeywords.map(
+            keyword =>
+
+
+                ({
+
+                    id:
+                        keyword.label
+                        .toLowerCase(),
+
+                    label:
+                        keyword.label,
+
+                    value:
+                        5 +
+
+                        Math.sqrt(
+                            keyword.n
+                        ) * 5
+
+                })
+
+        );
+
+
+
+    const edges =
+
+
+        [
+
+            ...edgeMap
+
+        ]
+
+        .filter(
+            item =>
+                item[1] >= 2
+        )
+
+        .map(
+            item => {
+
+
+                const parts =
+                    item[0]
+                    .split("|||");
+
+
+
+                return {
+
+                    from:
+                        parts[0],
+
+                    to:
+                        parts[1],
+
+                    value:
+                        item[1]
+
+                };
+
+            }
+
+        );
+
+
+
+    $("network").innerHTML = "";
+
+
+
+    new vis.Network(
+
+        $("network"),
+
+        {
+
+            nodes:
+                new vis.DataSet(
+                    nodes
+                ),
+
+            edges:
+                new vis.DataSet(
+                    edges
+                )
+
+        },
+
+        {
+
+            physics: {
+
+                barnesHut: {
+
+                    gravitationalConstant:
+                        -2500,
+
+                    springLength:
+                        140
+
+                },
+
+                stabilization:
+                    true
+
+            },
+
+
+            interaction: {
+
+                hover:
+                    true,
+
+                navigationButtons:
+                    true
+
+            },
+
+
+            nodes: {
+
+                shape:
+                    "dot",
+
+                scaling: {
+
+                    min:
+                        10,
+
+                    max:
+                        45
+
+                }
+
+            },
+
+
+            edges: {
+
+                smooth:
+                    true
+
+            }
+
+        }
+
+    );
+
+}
+
+
+
+/* =====================================================
+   SEARCH / FILTER EVENTS
+===================================================== */
+
+$("search")
+.addEventListener(
+    "input",
+    filter
+);
+
+
+$("year")
+.addEventListener(
+    "change",
+    filter
+);
+
+
+$("type")
+.addEventListener(
+    "change",
+    filter
+);
+
+
+$("top")
+.addEventListener(
+    "change",
+    filter
+);
+
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+$("reset").onclick = function() {
+
+
+    $("search").value = "";
+
+
+    $("year").value =
+        "ALL";
+
+
+    $("type").value =
+        "ALL";
+
+
+    $("top").value =
+        "15";
+
+
+    filter();
+
+};
+
+
+
+/* =====================================================
+   LOAD CSV AUTOMATICALLY
+===================================================== */
+
+function loadCSV() {
+
+
+    $("status").textContent =
+        "กำลังอ่าน scopus_data.csv ...";
+
+
+
+    fetch(
+        CSV_NAME + "?v=" + Date.now()
+    )
+
+    .then(
+        response => {
+
+
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    "HTTP " +
+                    response.status
+                );
+
+            }
+
+
+            return response.text();
+
+        }
+
+    )
+
+    .then(
+        csvText => {
+
+
+            Papa.parse(
+
+                csvText,
+
+                {
+
+                    header:
+                        true,
+
+                    skipEmptyLines:
+                        true,
+
+                    complete:
+                        result => {
+
+
+                            DATA =
+
+                                result.data
+
+                                .filter(
+                                    row =>
+                                        row.Title ||
+                                        row.EID ||
+                                        row.Abstract
+                                );
+
+
+
+                            if (
+                                !DATA.length
+                            ) {
+
+                                $("status").innerHTML =
+
+                                    `<span class="error">
+
+                                        อ่าน CSV ได้
+                                        แต่ไม่พบข้อมูล
+
+                                    </span>`;
+
+                                return;
+
+                            }
+
+
+
+                            options();
+
+                            filter();
+
+                        },
+
+
+                    error:
+                        error => {
+
+
+                            $("status").innerHTML =
+
+                                `<span class="error">
+
+                                    อ่าน CSV ไม่สำเร็จ:
+
+                                    ${
+                                        esc(
+                                            error.message ||
+                                            error
+                                        )
+                                    }
+
+                                </span>`;
+
+                        }
+
+                }
+
+            );
+
+        }
+
+    )
+
+    .catch(
+        error => {
+
+
+            $("status").innerHTML =
+
+                `<span class="error">
+
+                    โหลด scopus_data.csv ไม่ได้:
+
+                    ${
+                        esc(
+                            error.message
+                        )
+                    }
+
+                    <br><br>
+
+                    ตรวจสอบว่า
+
+                    <b>
+                        scopus_data.csv
+                    </b>
+
+                    อยู่ในโฟลเดอร์เดียวกับ HTML
+
+                </span>`;
+
+        }
+
+    );
+
+}
+
+
+
+/* =====================================================
+   START
+===================================================== */
+
+loadCSV();
+
 
 </script>
 
